@@ -7,6 +7,7 @@ const fs = require('fs');
 const path = require('path');
 
 const EDITIONS_FILE = path.join(__dirname, 'src-tauri', 'editions.json');
+const WEB_EDITIONS_FILE = path.join(__dirname, 'src', 'editions.json');
 const GITHUB_API = 'https://api.github.com';
 const CF_R2_PUBLIC = 'https://pub-173a1f638a3b4c95b5f58b09c0b968aa.r2.dev';
 
@@ -56,6 +57,7 @@ async function main() {
   }
 
   fs.writeFileSync(EDITIONS_FILE, JSON.stringify(editions, null, 2));
+  fs.writeFileSync(WEB_EDITIONS_FILE, JSON.stringify(editions, null, 2));
   console.log('editions.json updated');
 }
 

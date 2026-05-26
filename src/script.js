@@ -22,12 +22,16 @@ function log(msg) {
 }
 
 async function init() {
-  try {
-    const res = await fetch('src-tauri/editions.json');
-    state.editions = await res.json();
-  } catch {
+  if (isTauri) {
     try {
       state.editions = await invoke('get_editions');
+    } catch (e) {
+      log('Failed to load editions: ' + e);
+    }
+  } else {
+    try {
+      const res = await fetch('editions.json');
+      state.editions = await res.json();
     } catch (e) {
       log('Failed to load editions: ' + e);
     }

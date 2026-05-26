@@ -1,0 +1,82 @@
+[
+  {
+    "name": "cinnamon",
+    "label": "Cinnamon Edition",
+    "description": "Main AcreetionOS with Cinnamon desktop",
+    "iso_url": "https://iso.acreetionos.org:8448/acreetion/AcreetionOS-1.0-x86_64.iso",
+    "zip_url": "https://iso.acreetionos.org:8448/acreetion/AcreetionOS-1.0-x86_64.iso.zip",
+    "source_url": "https://github.com/AcreetionOS-Code"
+  },
+  {
+    "name": "xl",
+    "label": "XL (XLibre) Edition",
+    "description": "Experimental XLibre display server",
+    "iso_url": "https://iso.acreetionos.org:8448/acreetion/AcreetionOS_XL-1.0-x86_64.iso",
+    "zip_url": "https://iso.acreetionos.org:8448/acreetion/AcreetionOS_XL-1.0-x86_64.iso.zip",
+    "source_url": "https://github.com/AcreetionOS-Code"
+  },
+  {
+    "name": "32bit",
+    "label": "AcreetionOS32 (32-bit)",
+    "description": "32-bit (i686) for legacy hardware",
+    "iso_url": "https://pub-173a1f638a3b4c95b5f58b09c0b968aa.r2.dev/AcreetionOS32-latest.iso",
+    "zip_url": "",
+    "source_url": "https://github.com/spivanatalie64/acreetionos32"
+  },
+  {
+    "name": "hyprland",
+    "label": "Hyprland Edition",
+    "description": "Wayland compositor with Jakoolit configs",
+    "iso_url": "https://pub-173a1f638a3b4c95b5f58b09c0b968aa.r2.dev/AcreetionOS-Hyprland-latest.iso",
+    "zip_url": "",
+    "source_url": "https://github.com/spivanatalie64/acreetionos-hyprland"
+  },
+  {
+    "name": "plasma",
+    "label": "Plasma Edition",
+    "description": "Modern, powerful KDE Plasma desktop",
+    "iso_url": "https://pub-173a1f638a3b4c95b5f58b09c0b968aa.r2.dev/AcreetionOS-Plasma-latest.iso",
+    "zip_url": "",
+    "source_url": "https://github.com/spivanatalie64"
+  },
+  {
+    "name": "mate",
+    "label": "MATE Edition",
+    "description": "Traditional GNOME 2-style desktop",
+    "iso_url": "",
+    "zip_url": "",
+    "source_url": "https://github.com/spivanatalie64/AcreetionOS-Mate"
+  },
+  {
+    "name": "gnome",
+    "label": "GNOME Edition",
+    "description": "Modern, sleek GNOME desktop",
+    "iso_url": "",
+    "zip_url": "",
+    "source_url": "https://github.com/spivanatalie64/acreetionos-gnome"
+  },
+  {
+    "name": "xfce",
+    "label": "XFCE Edition",
+    "description": "Lightweight, modular desktop",
+    "iso_url": "https://pub-173a1f638a3b4c95b5f58b09c0b968aa.r2.dev/AcreetionOS-XFCE-latest.iso",
+    "zip_url": "",
+    "source_url": "https://github.com/spivanatalie64"
+  },
+  {
+    "name": "sway",
+    "label": "Sway Edition",
+    "description": "Tiling Wayland compositor",
+    "iso_url": "https://pub-173a1f638a3b4c95b5f58b09c0b968aa.r2.dev/AcreetionOS-Sway-latest.iso",
+    "zip_url": "",
+    "source_url": "https://github.com/spivanatalie64"
+  },
+  {
+    "name": "i3",
+    "label": "i3 Edition",
+    "description": "Tiling window manager",
+    "iso_url": "https://pub-173a1f638a3b4c95b5f58b09c0b968aa.r2.dev/AcreetionOS-i3-latest.iso",
+    "zip_url": "",
+    "source_url": "https://github.com/spivanatalie64"
+  }
+]
