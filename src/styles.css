@@ -1,0 +1,44 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a2e;
+  color: #e0e0e0;
+  padding: 20px;
+}
+#app { max-width: 640px; margin: 0 auto; }
+header { text-align: center; margin-bottom: 2rem; }
+header h1 { color: #2ecc71; font-size: 1.6rem; }
+header p { color: #888; font-size: 0.9rem; margin-top: 0.3rem; }
+h2 { color: #2ecc71; font-size: 1.1rem; margin-bottom: 0.75rem; border-bottom: 1px solid #333; padding-bottom: 0.4rem; }
+section { margin-bottom: 1.5rem; }
+.btn {
+  display: inline-block; padding: 0.5rem 1rem; border: none; border-radius: 8px;
+  cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: all 0.2s;
+  background: #333; color: #e0e0e0;
+}
+.btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.btn.primary { background: #2ecc71; color: #000; }
+.btn.danger { background: #e74c3c; color: #fff; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.warning { background: rgba(243,156,18,0.1); border: 1px solid #f39c12; border-radius: 8px; padding: 0.75rem; font-size: 0.85rem; margin-bottom: 0.75rem; }
+.info-box { background: rgba(46,204,113,0.05); border: 1px solid #333; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.75rem; }
+select {
+  width: 100%; padding: 0.6rem; background: #16213e; color: #e0e0e0;
+  border: 1px solid #333; border-radius: 8px; font-size: 0.9rem; margin-bottom: 0.5rem;
+}
+#editions-list { display: grid; gap: 0.5rem; }
+.edition-card {
+  background: rgba(46,204,113,0.05); border: 1px solid #333; border-radius: 10px;
+  padding: 0.75rem; cursor: pointer; transition: all 0.2s;
+}
+.edition-card:hover { border-color: #2ecc71; }
+.edition-card.selected { border-color: #2ecc71; background: rgba(46,204,113,0.1); }
+.edition-card h3 { font-size: 0.95rem; color: #fff; }
+.edition-card p { font-size: 0.8rem; color: #888; margin-top: 0.2rem; }
+.edition-card .source-link { font-size: 0.75rem; color: #2ecc71; text-decoration: none; }
+.progress-bar { height: 20px; background: #333; border-radius: 10px; overflow: hidden; margin: 0.5rem 0; }
+#progress-fill { height: 100%; background: #2ecc71; width: 0%; transition: width 0.3s; }
+#progress-text { font-size: 0.85rem; color: #888; text-align: center; }
+#log { background: #0f0f23; padding: 0.75rem; border-radius: 8px; font-size: 0.8rem; max-height: 200px; overflow-y: auto; color: #aaa; }
+#action-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+#refresh-drives { margin-left: 0.5rem; }

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AcreetionOS USB Flasher</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>AcreetionOS USB Flasher</h1>
+      <p>Download and flash any AcreetionOS edition to a USB drive</p>
+    </header>
+
+    <section id="editions-section">
+      <h2>Select Edition</h2>
+      <div id="editions-list"></div>
+    </section>
+
+    <section id="drive-section" style="display:none">
+      <h2>Select Target Drive</h2>
+      <div id="drive-warning" class="warning">
+        ⚠ This will erase ALL data on the selected drive. Double-check you have the right one.
+      </div>
+      <select id="drive-select"></select>
+      <button id="refresh-drives" class="btn">Refresh</button>
+    </section>
+
+    <section id="action-section" style="display:none">
+      <div id="selected-info" class="info-box"></div>
+      <div id="progress-area" style="display:none">
+        <div class="progress-bar">
+          <div id="progress-fill"></div>
+        </div>
+        <p id="progress-text">Starting...</p>
+      </div>
+      <div id="action-buttons">
+        <button id="btn-download" class="btn primary">Download ISO</button>
+        <button id="btn-flash" class="btn danger" disabled>Download &amp; Flash to USB</button>
+      </div>
+    </section>
+
+    <section id="log-section" style="display:none">
+      <h2>Log</h2>
+      <pre id="log"></pre>
+    </section>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

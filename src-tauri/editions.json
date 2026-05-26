@@ -1,0 +1,50 @@
+[
+  {
+    "name": "cinnamon",
+    "label": "Cinnamon Edition",
+    "description": "Main AcreetionOS with Cinnamon desktop",
+    "iso_url": "https://iso.acreetionos.org:8448/acreetion/AcreetionOS-1.0-x86_64.iso",
+    "zip_url": "https://iso.acreetionos.org:8448/acreetion/AcreetionOS-1.0-x86_64.iso.zip",
+    "source_url": "https://github.com/AcreetionOS-Code"
+  },
+  {
+    "name": "xl",
+    "label": "XL (XLibre) Edition",
+    "description": "Experimental XLibre display server",
+    "iso_url": "https://iso.acreetionos.org:8448/acreetion/AcreetionOS_XL-1.0-x86_64.iso",
+    "zip_url": "https://iso.acreetionos.org:8448/acreetion/AcreetionOS_XL-1.0-x86_64.iso.zip",
+    "source_url": "https://github.com/AcreetionOS-Code"
+  },
+  {
+    "name": "32bit",
+    "label": "AcreetionOS32",
+    "description": "32-bit (i686) for legacy hardware",
+    "iso_url": "https://pub-173a1f638a3b4c95b5f58b09c0b968aa.r2.dev/AcreetionOS32-latest.iso",
+    "zip_url": "",
+    "source_url": "https://github.com/spivanatalie64/acreetionos32"
+  },
+  {
+    "name": "hyprland",
+    "label": "Hyprland Edition",
+    "description": "Wayland compositor with Jakoolit configs",
+    "iso_url": "https://pub-173a1f638a3b4c95b5f58b09c0b968aa.r2.dev/AcreetionOS-Hyprland-latest.iso",
+    "zip_url": "",
+    "source_url": "https://github.com/spivanatalie64/acreetionos-hyprland"
+  },
+  {
+    "name": "mate",
+    "label": "MATE Edition",
+    "description": "Traditional GNOME 2-style desktop",
+    "iso_url": "",
+    "zip_url": "",
+    "source_url": "https://github.com/spivanatalie64/AcreetionOS-Mate"
+  },
+  {
+    "name": "gnome",
+    "label": "GNOME Edition",
+    "description": "Modern GNOME desktop",
+    "iso_url": "",
+    "zip_url": "",
+    "source_url": "https://github.com/spivanatalie64/acreetionos-gnome"
+  }
+]
