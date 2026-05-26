@@ -1,5 +1,5 @@
-const { invoke } = window.__TAURI__?.core || {};
-const { listen } = window.__TAURI__?.event || {};
+const { invoke } = window.__TAURI__.core;
+const { listen } = window.__TAURI__.event;
 
 let state = {
   editions: [],
@@ -16,16 +16,24 @@ function log(msg) {
 }
 
 async function init() {
-  state.editions = await invoke('get_editions');
-  renderEditions();
+  try {
+    state.editions = await invoke('get_editions');
+    renderEditions();
 
-  const drives = await invoke('list_drives');
-  state.drives = drives;
-  renderDrives();
-
-  document.getElementById('refresh-drives').onclick = async () => {
     state.drives = await invoke('list_drives');
     renderDrives();
+    document.getElementById('drive-section').style.display = 'block';
+  } catch (e) {
+    log(`Init error: ${e}`);
+  }
+
+  document.getElementById('refresh-drives').onclick = async () => {
+    try {
+      state.drives = await invoke('list_drives');
+      renderDrives();
+    } catch (e) {
+      log(`Drive refresh error: ${e}`);
+    }
   };
 
   document.getElementById('btn-download').onclick = downloadOnly;
@@ -37,12 +45,12 @@ async function init() {
       document.getElementById('progress-fill').style.width = p.percent + '%';
       document.getElementById('progress-text').textContent = `${p.written} (${p.percent}%)`;
     });
-    listen('flash-progress', (e) => {
+    listen('flash-progress', () => {
       document.getElementById('progress-text').textContent = 'Writing to USB...';
     });
     listen('flash-done', () => {
       document.getElementById('progress-fill').style.width = '100%';
-      document.getElementById('progress-text').textContent = '✅ Flash complete! Safe to remove the drive.';
+      document.getElementById('progress-text').textContent = 'Flash complete! Safe to remove the drive.';
     });
   }
 }
@@ -56,7 +64,6 @@ function renderEditions() {
     card.innerHTML = `
       <h3>${ed.label}</h3>
       <p>${ed.description}</p>
-      <a href="${ed.source_url}" target="_blank" class="source-link">Source</a>
     `;
     card.onclick = () => selectEdition(i);
     list.appendChild(card);
@@ -65,22 +72,21 @@ function renderEditions() {
 
 function selectEdition(i) {
   state.selectedEdition = i;
+  state.downloadedIso = '';
   document.querySelectorAll('.edition-card').forEach((c, j) => {
     c.classList.toggle('selected', j === i);
   });
   const ed = state.editions[i];
   document.getElementById('selected-info').innerHTML = `
     <strong>${ed.label}</strong><br>
-    <span style="color:#888;font-size:0.85rem">${ed.iso_url || 'No direct ISO URL available'}</span>
+    <span style="color:#888;font-size:0.85rem">${ed.iso_url || 'No ISO available'}</span>
   `;
   document.getElementById('action-section').style.display = 'block';
-  if (!ed.iso_url) {
-    document.getElementById('btn-download').disabled = true;
-    document.getElementById('btn-flash').disabled = true;
-  } else {
-    document.getElementById('btn-download').disabled = false;
-    document.getElementById('btn-flash').disabled = !state.selectedDrive;
-  }
+  const hasIso = !!ed.iso_url;
+  document.getElementById('btn-download').disabled = !hasIso;
+  document.getElementById('btn-flash').disabled = !(hasIso && state.selectedDrive);
+  document.getElementById('progress-area').style.display = 'none';
+  document.getElementById('progress-fill').style.width = '0%';
 }
 
 function renderDrives() {
@@ -98,9 +104,9 @@ function renderDrives() {
   });
   sel.onchange = () => {
     state.selectedDrive = sel.value;
-    document.getElementById('drive-section').style.display = 'block';
     if (state.selectedEdition !== null) {
-      document.getElementById('btn-flash').disabled = !state.selectedDrive;
+      const ed = state.editions[state.selectedEdition];
+      document.getElementById('btn-flash').disabled = !(ed && ed.iso_url && state.selectedDrive);
     }
   };
   state.selectedDrive = sel.value;
@@ -118,10 +124,10 @@ async function downloadOnly() {
       dest: `/tmp/acreetionos-${ed.name}.iso`,
     });
     state.downloadedIso = path;
-    log(`✅ Downloaded to ${path}`);
-    document.getElementById('btn-flash').disabled = false;
+    log(`Downloaded to ${path}`);
+    document.getElementById('btn-flash').disabled = !state.selectedDrive;
   } catch (e) {
-    log(`❌ Download failed: ${e}`);
+    log(`Download failed: ${e}`);
   }
 }
 
@@ -129,8 +135,13 @@ async function downloadAndFlash() {
   const ed = state.editions[state.selectedEdition];
   if (!ed || !ed.iso_url || !state.selectedDrive) return;
 
-  await downloadOnly();
-  if (!state.downloadedIso) return;
+  document.getElementById('log-section').style.display = 'block';
+  document.getElementById('progress-area').style.display = 'block';
+
+  if (!state.downloadedIso) {
+    await downloadOnly();
+    if (!state.downloadedIso) return;
+  }
 
   log(`Flashing to ${state.selectedDrive}...`);
   document.getElementById('btn-download').disabled = true;
@@ -141,9 +152,10 @@ async function downloadAndFlash() {
       device: state.selectedDrive,
     });
   } catch (e) {
-    log(`❌ Flash failed: ${e}`);
+    log(`Flash failed: ${e}`);
   }
   document.getElementById('btn-download').disabled = false;
+  document.getElementById('btn-flash').disabled = false;
 }
 
 document.addEventListener('DOMContentLoaded', init);

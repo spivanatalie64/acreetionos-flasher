@@ -1,9 +1,8 @@
 use serde::{Deserialize, Serialize};
-use std::io::{self, Write};
-use std::process::{Command, Stdio};
-use std::sync::mpsc;
-use std::thread;
-use tauri::{Emitter, Manager};
+use std::io::Write;
+use tauri::Emitter;
+use tokio::io::{AsyncBufReadExt, BufReader};
+use tokio::process::Command;
 
 mod editions;
 
@@ -25,7 +24,7 @@ pub struct FlashProgress {
 fn list_drives() -> Vec<Drive> {
     let mut drives = Vec::new();
     if cfg!(target_os = "linux") {
-        if let Ok(out) = Command::new("lsblk")
+        if let Ok(out) = std::process::Command::new("lsblk")
             .args(["-d", "-o", "NAME,SIZE,MODEL", "-n", "-l"])
             .output()
         {
@@ -45,7 +44,7 @@ fn list_drives() -> Vec<Drive> {
             }
         }
     } else if cfg!(target_os = "macos") {
-        if let Ok(out) = Command::new("diskutil").args(["list", "-plist"]).output() {
+        if let Ok(out) = std::process::Command::new("diskutil").args(["list", "-plist"]).output() {
             if let Ok(s) = String::from_utf8(out.stdout) {
                 for line in s.lines() {
                     if line.contains("BSD Name") {
@@ -106,71 +105,62 @@ async fn flash_iso(
     device: String,
     app: tauri::AppHandle,
 ) -> Result<String, String> {
-    let (tx, rx) = mpsc::channel();
-    let dev = device.clone();
+    let mut child = Command::new("dd")
+        .args([
+            &format!("if={}", iso_path),
+            &format!("of={}", device),
+            "bs=4M",
+            "status=progress",
+        ])
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
+        .spawn()
+        .map_err(|e| format!("Failed to spawn dd: {}", e))?;
 
-    thread::spawn(move || {
-        let child = Command::new("dd")
-            .args([
-                &format!("if={}", iso_path),
-                &format!("of={}", dev),
-                "bs=4M",
-                "status=progress",
-            ])
-            .stdout(Stdio::piped())
-            .stderr(Stdio::piped())
-            .spawn();
-
-        match child {
-            Ok(mut c) => {
-                let _ = c.wait();
-                let _ = tx.send(());
-            }
-            Err(e) => {
-                let _ = tx.send(());
-                eprintln!("dd error: {}", e);
-            }
-        }
-    });
-
-    // Simulate progress while dd runs
-    let dev_clone = device.clone();
+    let stderr = child.stderr.take().unwrap();
+    let reader = BufReader::new(stderr);
     let app_clone = app.clone();
-    thread::spawn(move || {
-        loop {
-            if rx.try_recv().is_ok() {
-                break;
-            }
-            // Try to read progress from dd output
-            if cfg!(target_os = "linux") {
-                if let Ok(out) = Command::new("sh")
-                    .args(["-c", &format!("kill -USR1 $(pgrep -x dd) 2>/dev/null; sleep 2")])
-                    .output()
-                {
-                    let _ = out;
+
+    let _progress_handle = tokio::spawn(async move {
+        let mut lines = reader.lines();
+        let mut last_bytes: u64 = 0;
+        let mut last_time = std::time::Instant::now();
+
+        while let Ok(Some(line)) = lines.next_line().await {
+            if line.contains("bytes copied") {
+                if let Some(bytes_str) = line.split_whitespace().next() {
+                    if let Ok(bytes) = bytes_str.replace(',', "").parse::<u64>() {
+                        let elapsed = last_time.elapsed().as_secs_f64();
+                        let speed = if elapsed > 0.0 {
+                            (bytes as f64 - last_bytes as f64) / elapsed / 1024.0 / 1024.0
+                        } else {
+                            0.0
+                        };
+                        last_bytes = bytes;
+                        last_time = std::time::Instant::now();
+                        let _ = app_clone.emit(
+                            "flash-progress",
+                            FlashProgress {
+                                percent: 0,
+                                speed: format!("{:.1} MB/s", speed),
+                                written: format!("{:.1} MB", bytes as f64 / 1024.0 / 1024.0),
+                            },
+                        );
+                    }
                 }
             }
-            let _ = app_clone.emit(
-                "flash-progress",
-                FlashProgress {
-                    percent: 0,
-                    speed: "".to_string(),
-                    written: "Writing...".to_string(),
-                },
-            );
-            std::thread::sleep(std::time::Duration::from_secs(2));
         }
         let _ = app_clone.emit("flash-done", "Complete");
     });
 
-    // Wait for dd to finish
-    thread::spawn(move || {
-        Command::new("sync")
-            .status()
-            .ok();
-    });
+    let status = child.wait().await.map_err(|e| format!("dd failed: {}", e))?;
 
-    Ok("Flash complete!".to_string())
+    if status.success() {
+        let _ = std::process::Command::new("sync").status();
+        Ok("Flash complete!".to_string())
+    } else {
+        Err("dd reported a failure".to_string())
+    }
 }
 
 #[tauri::command]

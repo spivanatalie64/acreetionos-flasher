@@ -1,11 +1,10 @@
 name: Build Flasher
 
 on:
-  schedule:
-    - cron: '0 6 * * 1'
-  workflow_dispatch:
   push:
     branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -52,6 +51,8 @@ jobs:
         run: npm install
 
       - name: Build Tauri app
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: 1
         run: npm run tauri build -- --target ${{ matrix.target }}
 
       - name: Upload artifact
@@ -63,17 +64,18 @@ jobs:
 
   release:
     needs: build
-    if: github.event_name != 'push'
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: build-${{ github.run_number }}
-          name: "AcreetionOS USB Flasher — Build #${{ github.run_number }}"
+          tag_name: ${{ github.ref_name }}
+          name: "AcreetionOS USB Flasher — ${{ github.ref_name }}"
           files: |
             **/*.AppImage
             **/*.deb
             **/*.dmg
             **/*.exe
+          token: ${{ secrets.GITHUB_TOKEN }}
