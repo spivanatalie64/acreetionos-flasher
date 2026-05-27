@@ -33,7 +33,7 @@ fn list_drives() -> Vec<Drive> {
                 let parts: Vec<&str> = line.split_whitespace().collect();
                 if parts.len() >= 2 {
                     let name = parts[0];
-                    if name.starts_with("sd") || name.starts_with("nvme") {
+                    if name.starts_with("sd") || name.starts_with("nvme") || name.starts_with("loop") {
                         drives.push(Drive {
                             device: format!("/dev/{}", name),
                             size: parts[1].to_string(),
